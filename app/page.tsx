@@ -3,9 +3,16 @@
 import DietEntry from '../components/DietTextBox';
 import React, { FC, useState } from 'react';
 
+interface MacroResults {
+  calories: string;
+  protein: string;
+  fat: string;
+  carbs: string;
+}
+
 const Home: FC = () => {
   const [diet, setDiet] = useState<string>('');
-  const [results, setResults] = useState<object>();
+  const [results, setResults] = useState<MacroResults | null>(null);
 
   const handleDietChange = (newDiet: string) => {
     setDiet(newDiet);
