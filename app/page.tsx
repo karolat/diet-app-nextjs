@@ -5,7 +5,7 @@ import React, { FC, useState } from 'react';
 
 const Home: FC = () => {
   const [diet, setDiet] = useState<string>('');
-  const [results, setResults] = useState<string>('');
+  const [results, setResults] = useState<object>();
 
   const handleDietChange = (newDiet: string) => {
     setDiet(newDiet);
@@ -21,7 +21,7 @@ const Home: FC = () => {
     .then((response) => response.json())
     .then((data) => {
         console.log(data.completion);
-        setResults(data.completion);
+        setResults(JSON.parse(data.completion));
       })
     }
 
@@ -30,13 +30,18 @@ const Home: FC = () => {
     <div>
       {results && (
         <div className="flex flex-col items-center justify-center min-h-screen">
-          <p className="mb-4 text-2xl font-bold">Your new diet:</p>
-          <p className="w-full max-w-md p-2 border border-gray-300 rounded-md">
-            {results}
+          <p className="mb-4 text-2xl font-bold">Macros for the day:</p>
+          <p className="">
+            Calories: {results.calories}
+            <br />
+            Protein: {results.protein}
+            <br />
+            Fat: {results.fat}
+            <br />
+            Carbs: {results.carbs}
           </p>
         </div>
       )}
-      <p className='items-center align-justify-center'>{results}</p>
       <DietEntry onDietChange={handleDietChange} />
     </div>
   );
