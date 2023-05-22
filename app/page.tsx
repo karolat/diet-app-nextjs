@@ -1,6 +1,6 @@
 'use client';
 
-import DietEntry from '../components/DietTextBox';
+import DietEntry from '../components/DietEntry';
 import React, { FC, useState } from 'react';
 
 interface MacroResults {
@@ -25,17 +25,16 @@ const Home: FC = () => {
       },
       body: JSON.stringify({ text: newDiet }),
     })
-    .then((response) => response.json())
-    .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data.completion);
         setResults(JSON.parse(data.completion));
-      })
-    }
-
+      });
+  };
 
   return (
     <div>
-      {results && (
+      {results ? (
         <div className="flex flex-col items-center justify-center min-h-screen">
           <p className="mb-4 text-2xl font-bold">Macros for the day:</p>
           <p className="">
@@ -48,10 +47,11 @@ const Home: FC = () => {
             Carbs: {results.carbs}
           </p>
         </div>
+      ) : (
+        <DietEntry onDietChange={handleDietChange} />
       )}
-      <DietEntry onDietChange={handleDietChange} />
     </div>
   );
-}
+};
 
 export default Home;
