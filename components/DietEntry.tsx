@@ -1,5 +1,6 @@
 'use client';
 
+import { MouseEventHandler } from 'react';
 import React, { FC, useState } from 'react';
 
 interface DietEntryProps {
@@ -8,10 +9,6 @@ interface DietEntryProps {
 
 const DietEntry: FC<DietEntryProps> = ({ onDietChange }) => {
   const [dietString, setDietString] = useState<string>('');
-
-  const handleSubmit = () => {
-    onDietChange(dietString);
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -22,10 +19,10 @@ const DietEntry: FC<DietEntryProps> = ({ onDietChange }) => {
         onChange={(e) => setDietString(e.target.value)}
       ></textarea>
       <button
-        className="px-4 py-2 mt-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+        className="w-full max-w-md px-4 py-2 mt-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
         onClick={(e) => {
           e.preventDefault();
-          handleSubmit();
+          onDietChange(dietString);
           setDietString('');
         }}
       >

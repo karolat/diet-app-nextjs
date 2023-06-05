@@ -1,9 +1,10 @@
 'use client';
 
 import DietEntry from '../components/DietEntry';
+import Results from '../components/Results';
 import React, { FC, useState } from 'react';
 
-interface MacroResults {
+export interface MacroResults {
   calories: string;
   protein: string;
   fat: string;
@@ -11,13 +12,12 @@ interface MacroResults {
 }
 
 const Home: FC = () => {
-  const [diet, setDiet] = useState<string>('');
   const [results, setResults] = useState<MacroResults | null>(null);
+  const [isWaitingForResponse, setIsWaitingForResponse] =
+    useState<boolean>(false);
 
   const handleDietChange = (newDiet: string) => {
-    setDiet(newDiet);
-    console.log(`New diet: ${newDiet}`);
-
+    setIsWaitingForResponse(true);
     fetch('/api/generate', {
       method: 'POST',
       headers: {
@@ -27,26 +27,17 @@ const Home: FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.completion);
         setResults(JSON.parse(data.completion));
+        setIsWaitingForResponse(false);
       });
   };
 
   return (
     <div>
       {results ? (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <p className="mb-4 text-2xl font-bold">Macros for the day:</p>
-          <p className="">
-            Calories: {results.calories}
-            <br />
-            Protein: {results.protein}
-            <br />
-            Fat: {results.fat}
-            <br />
-            Carbs: {results.carbs}
-          </p>
-        </div>
+        <Results results={results} />
+      ) : isWaitingForResponse ? (
+        <p>WAITING FOR RESPONSE</p>
       ) : (
         <DietEntry onDietChange={handleDietChange} />
       )}
