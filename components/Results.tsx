@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { MacroResults } from '../app/page'
+import { Diet, FoodItem, MacroResults } from '../app/page'
 
 interface ResultsProps {
   results: MacroResults | null;
