@@ -58,7 +58,7 @@ const Home: FC = () => {
     );
 
     // Join the lines back together
-    newDiet = formattedLines.join('\n').replace(/^\s*\d*,*\d*[\r\n]*/gm, '');
+    newDiet = formattedLines.join('\n').replace(/^\s*\d*,*\d*[\r\n]/gm, '');
 
     setIsWaitingForResponse(true);
     fetch('/api/generate', {
