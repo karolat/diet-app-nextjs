@@ -57,23 +57,55 @@ const Home: FC = () => {
       line.replace(/\s+/g, ' ').toLowerCase()
     );
 
-    // Join the lines back together
-    newDiet = formattedLines.join('\n').replace(/^\s*\d*,*\d*[\r\n]/gm, '');
+    // Replace lines that only contain a number
+    const filteredLines = formattedLines.filter(
+      (line) => !/^\s*[\d,]*\s*$/.test(line)
+    );
+
+    console.log(filteredLines);
 
     setIsWaitingForResponse(true);
-    fetch('/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text: newDiet }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const parsedData = JSON.parse(data.completion) as Diet;
-        const sumResults = sumMacroResults(parsedData);
-        setResults(sumResults)
+
+    const requests = filteredLines.map((line) =>
+      fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: line }),
+      })
+        .then((response) => response.json())
+        .then((data) => JSON.parse(data.completion) as Diet)
+    );
+    console.log(requests);
+
+    Promise.all(requests)
+      .then((diets) => {
+        const results = {
+          calories: 0,
+          fat: 0,
+          protein: 0,
+          carbs: 0,
+        };
+
+        diets.forEach((diet) => {
+          const sumResults = sumMacroResults(diet);
+          results.calories += parseFloat(sumResults.calories);
+          results.fat += parseFloat(sumResults.fat);
+          results.protein += parseFloat(sumResults.protein);
+          results.carbs += parseFloat(sumResults.carbs);
+        });
+
+        setResults({
+          calories: results.calories.toString(),
+          fat: results.fat.toString(),
+          protein: results.protein.toString(),
+          carbs: results.carbs.toString(),
+        });
         setIsWaitingForResponse(false);
+      })
+      .catch((error) => {
+        console.error(error);
       });
   };
 
