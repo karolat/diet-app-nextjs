@@ -17,6 +17,13 @@ const DietEntry: FC<DietEntryProps> = ({ onDietChange }) => {
         className="w-full max-w-md p-2 border border-gray-300 rounded-md"
         value={dietString}
         onChange={(e) => setDietString(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            onDietChange(dietString);
+            setDietString('');
+          }
+        }}
       ></textarea>
       <button
         className="w-full max-w-md px-4 py-2 mt-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"

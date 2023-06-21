@@ -1,3 +1,4 @@
+import { kv } from '@vercel/kv';
 const { Configuration, OpenAIApi } = require('openai');
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -12,9 +13,18 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      console.log('started')
+      console.log('started');
       // Get the text from the request body
       const { text } = req.body;
+
+      // Check if they result is cached
+      const cachedResult = await kv.get(text);
+
+      if (cachedResult) {
+        console.log(cachedResult);
+        res.status(200).json({ completion: JSON.stringify(cachedResult) });
+        return;
+      }
 
       // Include the text in the prompt
       const prompt = `Parse a list of food items and return a json response estimating the nutritional macronutrient amounts for each of the items listed.  If an item item is listed multiple times, list it multiple times.  List total calories, fat, protein, and carbs per item.  Some items might not have calories listed after their text; if this is the case, estimate the macros for that food item, assuming a large portion.  If the item as a number after it by itself, that number is the amount of calories.  If the item has a number with p after it, like '90p', that is the amount of protein for that item.  If there is a date listed, ignore it.
@@ -47,7 +57,8 @@ lemonade 170
 ### Input ###
 ${text}
 
-### Output ###`;
+### Output ###
+`;
 
       const response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -62,6 +73,10 @@ ${text}
       // Extract the text of the first choice in the response
       const completion = response.data.choices[0].text;
       console.log(completion);
+
+      // Cache the result
+      await kv.set(text, completion);
+
       // Send the completion in the response of your endpoint
       res.status(200).json({ completion });
     } catch (error) {

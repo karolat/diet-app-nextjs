@@ -1,5 +1,6 @@
 'use client';
 
+import CircularProgress from '@mui/material/CircularProgress';
 import DietEntry from '../components/DietEntry';
 import Results from '../components/Results';
 import React, { FC, useState } from 'react';
@@ -115,7 +116,7 @@ const Home: FC = () => {
         <Results results={results} />
       ) : isWaitingForResponse ? (
         <div className="flex items-center justify-center h-screen">
-          <p className="">WAITING FOR RESPONSE</p>
+          <CircularProgress />
         </div>
       ) : (
         <DietEntry onDietChange={handleDietChange} />
