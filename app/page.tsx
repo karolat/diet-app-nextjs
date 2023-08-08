@@ -6,14 +6,14 @@ import Results from '../components/Results';
 import React, { FC, useState } from 'react';
 
 export interface FoodItem {
-  n: string;
-  kc: number;
-  f: number;
-  p: number;
-  c: number;
+  n?: string;
+  kc?: number;
+  f?: number;
+  p?: number;
+  c?: number;
 }
 
-export type Diet = FoodItem[];
+export type Diet = FoodItem;
 
 export interface MacroResults {
   calories: string;
@@ -23,19 +23,13 @@ export interface MacroResults {
 }
 
 const sumMacroResults = (diet: Diet): MacroResults => {
-  const results = {
-    calories: 0,
-    fat: 0,
-    protein: 0,
-    carbs: 0,
-  };
 
-  diet.forEach(({ kc, f, p, c }) => {
-    results.calories += kc;
-    results.fat += f;
-    results.protein += p;
-    results.carbs += c;
-  });
+  const results = {
+    calories: diet.kc || 0,
+    fat: diet.f || 0,
+    protein: diet.p || 0,
+    carbs: diet.c || 0,
+  };
 
   return {
     calories: results.calories.toString(),
